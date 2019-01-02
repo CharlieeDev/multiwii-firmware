@@ -41,6 +41,9 @@ void initializeServo();
 #if defined(MEGA)
   uint8_t PWM_PIN[8] = {3,5,6,2,7,8,9,10};      //for a quad+: rear,right,left,front   //+ for y6: 7:under right  8:under left
 #endif
+#if defined(MEGA128)
+  uint8_t PWM_PIN[8] = {13,4,14,3,A4,A5,SW_PWM_P3,SW_PWM_P4}; //for a quad+: rear,right,left,front
+#endif
 
 /**************************************************************************************/
 /***************         Software PWM & Servo variables            ********************/
@@ -402,7 +405,15 @@ void writeMotors() { // [1000;2000] => [125;250]
       #endif
     #endif
   #endif
-
+  /********  Specific PWM Timers & Registers for the atmega128   ************/
+  #if defined(MEGA128)
+    #if (NUMBER_MOTOR == 4)
+		OCR1A = motor[0]<<1; //  pin 13
+		OCR3A = motor[1]<<1; //  pin 4
+		OCR1B = motor[2]<<1; //  pin 14
+		OCR3B = motor[3]<<1; //  pin 3
+    #endif
+  #endif
   /********  Specific PWM Timers & Registers for the atmega328P (Promini)   ************/
   #if defined(PROMINI)
     #if (NUMBER_MOTOR > 0)
@@ -629,7 +640,32 @@ void initOutput() {
       #endif
     #endif
   #endif
-  
+  /********  Specific PWM Timers & Registers for the atmega128   ************/
+  #if defined(MEGA128)
+    #if (NUMBER_MOTOR == 4)
+	//Timer1
+	//Fast PWM
+	TCCR1A = (1<<COM1A1)|(1<<COM1B1); //Clear OC1A/OC1B on Compare Match, set OC1A/OC1B at BOTTOM
+	TCCR1A |= (1<<WGM11); // Fast PWM (ICR1 top)
+	TCCR1B = (1<<WGM12)|(1<<WGM13);// Fast PWM (ICR1 top)
+	TCCR1B |= _BV(CS11); // prescaler 8
+	ICR1 = 40000; // (16 000 000Hz(uC clock) / 8(prescaler) / (4000+1)(max ICR1+1)) ~= 500Hz
+	DDRB |= _BV(PB5)|_BV(PB6);  //PB5 (OC1A), PB6 (OC1B) - PWM signal
+	OCR1A = 2128;
+	OCR1B = 2128;
+
+	//Timer3
+	//Fast PWM
+	TCCR3A = (1<<COM3A1)|(1<<COM3B1); //Clear OC3A/OC3B on Compare Match, set OC3A/OC3B at BOTTOM
+	TCCR3A |= (1<<WGM31); // Fast PWM (ICR3 top)
+	TCCR3B = (1<<WGM32)|(1<<WGM33);// Fast PWM (ICR1 top)
+	TCCR3B |= _BV(CS31); // prescaler 8
+	ICR3 = 40000; // (16 000 000Hz(uC clock) / 8(prescaler) / (4000+1)(max ICR3+1)) ~= 500Hz
+	DDRE |= _BV(PE3)|_BV(PE4);  //PE3 (OC3A), PE4 (OC3B) - PWM signal
+	OCR3A = 2128;
+	OCR3B = 2128;
+    #endif
+  #endif
   /********  Specific PWM Timers & Registers for the atmega328P (Promini)   ************/
   #if defined(PROMINI)
     #if defined(EXT_MOTOR_32KHZ)

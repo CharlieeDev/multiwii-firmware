@@ -149,7 +149,11 @@
 #if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega1281__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
   #define MEGA
 #endif
-
+#if defined(__AVR_ATmega128__)
+  #define MEGA128
+#endif
+//TODO remove this
+#define MEGA128
 
 /**************************************************************************************/
 /***************             motor and servo numbers               ********************/
@@ -553,6 +557,101 @@
   #endif
 #endif
 
+/**************************  atmega128 (pingwin)  ***********************************/
+#if defined(MEGA128)
+  #define LEDPIN_PINMODE           DDRC |= (1<<1);
+  #define LEDPIN_OFF               PORTC &= ~(1<<1);
+  #define LEDPIN_ON                PORTC |= (1<<1);
+  #define LEDPIN_TOGGLE            PORTC ^= (1<<1);     //switch LEDPIN state (Port C1)
+
+  #define BUZZERPIN_PINMODE          DDRE |= (1<<5);
+  #if defined PILOTLAMP
+    #define    PL_PIN_ON    PORTE |= 1<<5;
+    #define    PL_PIN_OFF   PORTE &= ~(1<<5);
+  #else
+    #define BUZZERPIN_ON               PORTE |= 1<<5;
+    #define BUZZERPIN_OFF              PORTE &= ~(1<<5);
+  #endif
+
+  #define POWERPIN_PINMODE           //
+  #define POWERPIN_ON                //
+  #define POWERPIN_OFF               //
+  #define I2C_PULLUPS_ENABLE         PORTD |= 1<<0; PORTD |= 1<<1;   // PIN 2&3 (SDA&SCL)
+  #define I2C_PULLUPS_DISABLE        PORTD &= ~(1<<0); PORTD &= ~(1<<1);
+  #define PINMODE_LCD                ;
+  #define LCDPIN_OFF                 ;
+  #define LCDPIN_ON                  ;
+  #define STABLEPIN_PINMODE          ;
+  #define STABLEPIN_ON               ;
+  #define STABLEPIN_OFF              ;
+  #define PPM_PIN_INTERRUPT          DDRE &= ~(1 << 7);PORTE |= (1 << 7); EICRB |= (1 << ISC71)|(1 << ISC70); EIMSK |= (1 << INT7);
+  #if !defined(RX_SERIAL_PORT)
+    #define RX_SERIAL_PORT           1
+  #endif
+  //#define USB_CDC_TX                 3 //TODO
+  //#define USB_CDC_RX                 2 //TODO
+
+  //soft PWM Pins
+  #define SOFT_PWM_1_PIN_HIGH        //PORTD |= 1<<4;
+  #define SOFT_PWM_1_PIN_LOW         //PORTD &= ~(1<<4);
+  #define SOFT_PWM_2_PIN_HIGH        //PORTF |= 1<<5;
+  #define SOFT_PWM_2_PIN_LOW         //PORTF &= ~(1<<5);
+  #define SOFT_PWM_3_PIN_HIGH        //PORTF |= 1<<4;
+  #define SOFT_PWM_3_PIN_LOW         //PORTF &= ~(1<<4);
+  #define SOFT_PWM_4_PIN_HIGH        //PORTF |= 1<<5;
+  #define SOFT_PWM_4_PIN_LOW         //PORTF &= ~(1<<5);
+  #define SW_PWM_P3                  A4 //TODO
+  #define SW_PWM_P4                  A5 //TODO
+
+  // Servos //TODO
+  #define SERVO_1_PINMODE   DDRB |= (1<<4); // 12
+  #define SERVO_1_PIN_HIGH  PORTB|= 1<<4;
+  #define SERVO_1_PIN_LOW   PORTB &= ~(1<<4);
+  #define SERVO_2_PINMODE   DDRB |= (1<<7); // 15
+  #define SERVO_2_PIN_HIGH  PORTB |= 1<<7;
+  #define SERVO_2_PIN_LOW   PORTB &= ~(1<<7);
+  #define SERVO_3_PINMODE   //DDRF |= (1<<5); // A2
+  #define SERVO_3_PIN_HIGH  //PORTF |= 1<<5;
+  #define SERVO_3_PIN_LOW   //PORTF &= ~(1<<5);
+  #define SERVO_4_PINMODE   //DDRF |= (1<<4); // A3
+  #define SERVO_4_PIN_HIGH  //PORTF |= 1<<4;
+  #define SERVO_4_PIN_LOW   //PORTF &= ~(1<<4);
+  #define SERVO_5_PINMODE   //DDRC |= (1<<6); // 5
+  #define SERVO_5_PIN_HIGH  //PORTC|= 1<<6;
+  #define SERVO_5_PIN_LOW   //PORTC &= ~(1<<6);
+  #define SERVO_6_PINMODE   //DDRD |= (1<<7); // 6
+  #define SERVO_6_PIN_HIGH  //PORTD |= 1<<7;
+  #define SERVO_6_PIN_LOW   //PORTD &= ~(1<<7);
+  #define SERVO_7_PINMODE   //DDRB |= (1<<6); // 10
+  #define SERVO_7_PIN_HIGH  //PORTB |= 1<<6;
+  #define SERVO_7_PIN_LOW   //PORTB &= ~(1<<6);
+  #define SERVO_8_PINMODE   //DDRB |= (1<<5); // 9
+  #define SERVO_8_PIN_HIGH  //PORTB |= 1<<5;
+  #define SERVO_8_PIN_LOW   //PORTB &= ~(1<<5);
+
+  //Standart RX
+  #define THROTTLEPIN                  3
+  #define ROLLPIN                      6
+  #define PITCHPIN                     2
+  #define YAWPIN                       4
+  #define AUX1PIN                      5
+  #define AUX2PIN                      7
+  #define AUX3PIN                      1 // unused
+  #define AUX4PIN                      0 // unused
+
+  #define PCINT_PIN_COUNT          4
+  #define PCINT_RX_BITS            (1<<1),(1<<2),(1<<3),(1<<4)
+
+  #define PCINT_RX_PORT                PORTB
+  #define PCINT_RX_MASK                //TODO
+  #define PCIR_PORT_BIT                (1<<0)
+  #define RX_PC_INTERRUPT              PCINT0_vect
+  #define RX_PCINT_PIN_PORT            PINB
+
+  #define V_BATPIN                  A2    // Analog PIN 2
+  #define PSENSORPIN                //
+#endif
+
 /**************************  all the Mega types  ***********************************/
 #if defined(MEGA)
   #define LEDPIN_PINMODE             DDRB  |= (1<<7); DDRC  |= (1<<7); // Arduino pin 13, pin 30
@@ -561,8 +660,8 @@
   #define LEDPIN_OFF                 PORTB &= ~(1<<7);PORTC &= ~(1<<7);
   #define BUZZERPIN_PINMODE            DDRC  |= (1<<5); // Arduino pin 32
   #if defined PILOTLAMP
-    #define PL_PIN_ON                  PORTC |= 1<<5;
-    #define PL_PIN_OFF                 PORTC &= ~(1<<5);
+    #define    PL_PIN_ON    PORTC |= 1<<5;
+    #define    PL_PIN_OFF   PORTC &= ~(1<<5);
   #else
     #define BUZZERPIN_ON               PORTC |= 1<<5;
     #define BUZZERPIN_OFF              PORTC &= ~(1<<5);
@@ -1674,13 +1773,13 @@
   #define ACC 0
 #endif
 
-#if defined(HMC5883) || defined(HMC5843) || defined(AK8975) || defined(MAG3110)
+#if defined(HMC5883) || defined(HMC5843) || defined(AK8975) || defined(MAG3110) || defined(LSM303DLHC_MAG)
   #define MAG 1
 #else
   #define MAG 0
 #endif
 
-#if defined(ITG3200) || defined(ITG3050) || defined(L3G4200D) || defined(MPU6050) || defined(LSM330) || defined(MPU3050) || defined(WMP)
+#if defined(ITG3200) || defined(ITG3050) || defined(L3G4200D) || defined(L3G20)|| defined(MPU6050) || defined(LSM330) || defined(MPU3050) || defined(WMP)
   #define GYRO 1
 #else
   #define GYRO 0

@@ -264,6 +264,11 @@ void configureReceiver() {
   ISR(INT6_vect){rxInt();}
 #endif
 
+// attachInterrupt fix for atmega128
+#if defined(MEGA128) && defined(SERIAL_SUM_PPM)
+  ISR(INT7_vect){rxInt();}
+#endif
+
 // PPM_SUM at THROTTLE PIN on MEGA boards
 #if defined(PPM_ON_THROTTLE) && defined(MEGA) && defined(SERIAL_SUM_PPM)
   ISR(PCINT2_vect) { if(PINK & (1<<0)) rxInt(); }

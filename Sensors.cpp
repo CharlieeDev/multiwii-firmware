@@ -810,15 +810,16 @@ void ACC_getADC(){
 // I2C Accelerometer LSM303DLx
 // ************************************************************************************************************
 #if defined(LSM303DLx_ACC)
+#define LSM303DLx_ADDRESS	0x19
 void ACC_init () {
   delay(10);
-  i2c_writeReg(0x18,0x20,0x27);
-  i2c_writeReg(0x18,0x23,0x30);
-  i2c_writeReg(0x18,0x21,0x00);
+  i2c_writeReg(LSM303DLx_ADDRESS,0x20,0x27);
+  i2c_writeReg(LSM303DLx_ADDRESS,0x23,0x30);
+  i2c_writeReg(LSM303DLx_ADDRESS,0x21,0x00);
 }
 
   void ACC_getADC () {
-  i2c_getSixRawADC(0x18,0xA8);
+  i2c_getSixRawADC(LSM303DLx_ADDRESS,0xA8);
 
   ACC_ORIENTATION( ((rawADC[1]<<8) | rawADC[0])>>4 ,
                    ((rawADC[3]<<8) | rawADC[2])>>4 ,
@@ -861,6 +862,30 @@ void Gyro_init() {
 
 void Gyro_getADC () {
   i2c_getSixRawADC(L3G4200D_ADDRESS,0x80|0x28);
+
+  GYRO_ORIENTATION( ((rawADC[1]<<8) | rawADC[0])>>2  ,
+                    ((rawADC[3]<<8) | rawADC[2])>>2  ,
+                    ((rawADC[5]<<8) | rawADC[4])>>2  );
+  GYRO_Common();
+}
+#endif
+
+// ************************************************************************************************************
+// I2C Gyroscope L3G20
+// ************************************************************************************************************
+#if defined(L3G20)
+#define L3G20_ADDRESS 0x6B
+void Gyro_init() {
+  delay(100);
+  i2c_writeReg(L3G20_ADDRESS ,0x20 ,0x8F ); // CTRL_REG1   380Hz ODR, 20hz filter, run!
+  delay(5);
+  i2c_writeReg(L3G20_ADDRESS ,0x24 ,0x02 ); // CTRL_REG5   low pass filter enable
+  delay(5);
+  i2c_writeReg(L3G20_ADDRESS ,0x23 ,0x30); // CTRL_REG4 Select 2000dps
+}
+
+void Gyro_getADC () {
+  i2c_getSixRawADC(L3G20_ADDRESS,0x80|0x28);
 
   GYRO_ORIENTATION( ((rawADC[1]<<8) | rawADC[0])>>2  ,
                     ((rawADC[3]<<8) | rawADC[2])>>2  ,
@@ -990,6 +1015,45 @@ void Mag_init() {
 #endif
 #endif
 
+// ************************************************************************************************************
+// I2C Compass LSM303DLHC_MAG
+// ************************************************************************************************************
+// I2C adress: 0x1E (7bit)
+// ************************************************************************************************************
+#if defined(LSM303DLHC_MAG)
+#define MAG_ADDRESS 0x1E
+#define MAG_DATA_REGISTER 0x03
+#define MAG_MR_REG_M 0x02
+#define MAG_CRA_REG_M 0x00
+#define MAG_CRB_REG_M 0x01
+
+void Mag_init() {
+  // 0x10 = 0b00010000
+  // DO = 100 (15 Hz ODR)
+  i2c_writeReg(MAG_ADDRESS,MAG_CRA_REG_M, 0x10);
+
+  // 0x20 = 0b00100000
+  // GN = 001 (+/- 1.3 gauss full scale)
+  i2c_writeReg(MAG_ADDRESS,MAG_CRB_REG_M, 0x20);
+  //TODO????
+  //magGain[ROLL] = 100000.0/1100.0; // Gain X [LSB/Gauss] for selected sensor input field range (1.3 in these case)
+  //magGain[PITCH] = 100000.0/1100.0; // Gain Y [LSB/Gauss] for selected sensor input field range
+  //magGain[YAW] = 100000.0/980.0;  // Gain Z [LSB/Gauss] for selected sensor input field range
+
+  // 0x00 = 0b00000000
+  // MD = 00 (continuous-conversion mode)
+  i2c_writeReg(MAG_ADDRESS,MAG_MR_REG_M, 0x00);
+}
+
+#if !defined(MPU6050_I2C_AUX_MASTER)
+void Device_Mag_getADC() {
+  i2c_getSixRawADC(MAG_ADDRESS,MAG_DATA_REGISTER);
+  MAG_ORIENTATION( ((rawADC[0]<<8) | rawADC[1]) ,
+				   ((rawADC[4]<<8) | rawADC[5]) ,
+				   ((rawADC[2]<<8) | rawADC[3]) );
+}
+#endif
+#endif
 
 // ************************************************************************************************************
 // I2C Compass HMC5883

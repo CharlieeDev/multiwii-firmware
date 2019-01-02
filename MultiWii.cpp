@@ -508,6 +508,11 @@ void annexCode() { // this code is excetuted at each loop and won't interfere wi
       static uint8_t  vbatcells_offset[VBAT_CELLS_NUM] = VBAT_CELLS_OFFSETS;
       static uint8_t  vbatcells_div[VBAT_CELLS_NUM] = VBAT_CELLS_DIVS;
       uint16_t v = analogRead(vbatcells_pins[ind]);
+      #if defined(VBAT_CELLS_PINS_ON) //enable next adc circuit
+        static uint16_t vbatcells_pinson[VBAT_CELLS_NUM] = VBAT_CELLS_PINS_ON;
+        digitalWrite(vbatcells_pinson[ind],LOW);
+        digitalWrite(vbatcells_pinson[(ind+1) % VBAT_CELLS_NUM],HIGH);
+      #endif
       analog.vbatcells[ind] = vbatcells_offset[ind] + (v << 2) / vbatcells_div[ind]; // result is Vbatt in 0.1V steps
       if (ind == VBAT_CELLS_NUM -1) analog.vbat = analog.vbatcells[ind];
     #endif // VBAT) && defined(VBAT_CELLS)
@@ -631,7 +636,14 @@ void annexCode() { // this code is excetuted at each loop and won't interfere wi
 }
 
 void setup() {
-  SerialOpen(0,SERIAL0_COM_SPEED);
+  #if defined(MEGA128)
+    #if defined(VBAT)
+	  analogReference(INTERNAL);
+    #endif
+	SerialOpen(1,SERIAL1_COM_SPEED);
+  #else
+  	SerialOpen(0,SERIAL0_COM_SPEED);
+  #endif
   #if defined(PROMICRO)
     SerialOpen(1,SERIAL1_COM_SPEED);
   #endif
@@ -710,6 +722,11 @@ void setup() {
   calibratingB = 200;  // 10 seconds init_delay + 200 * 25 ms = 15 seconds before ground pressure settles
   #if defined(POWERMETER)
     for(uint8_t j=0; j<=PMOTOR_SUM; j++) pMeter[j]=0;
+  #endif
+  #if defined(VBAT_CELLS_PINS_ON)
+    uint16_t vbatcells_pinsOn[VBAT_CELLS_NUM] = VBAT_CELLS_PINS_ON;
+    for(uint8_t j=0; j<VBAT_CELLS_NUM; j++) pinMode(vbatcells_pinsOn[j], OUTPUT);
+    digitalWrite(vbatcells_pinsOn[0],HIGH);
   #endif
   /************************************/
   #if GPS
