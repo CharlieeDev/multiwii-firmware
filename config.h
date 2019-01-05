@@ -1196,7 +1196,7 @@ Also note, that maqgnetic declination changes with time, so recheck your value e
   /********************************************************************/
   /*                   !!! No Fly Mode !!!                            */ 
 
-    #define DYNBALANCE   // (**) Dynamic balancing controlled from Gui
+    //#define DYNBALANCE   // (**) Dynamic balancing controlled from Gui
 
   /********************************************************************/
   /****           Regression testing                               ****/
