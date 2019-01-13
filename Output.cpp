@@ -688,11 +688,15 @@ void initOutput() {
     #if (NUMBER_MOTOR > 0)
       TCCR1A |= _BV(COM1A1); // connect pin 9 to timer 1 channel A
     #endif
+    #if defined(NRF24_RX)
+      initializeSoftPWM(); // use pin 6,5 instead of 10,11 for nRF24L01 receiver
+    #else
     #if (NUMBER_MOTOR > 1)
       TCCR1A |= _BV(COM1B1); // connect pin 10 to timer 1 channel B
     #endif
     #if (NUMBER_MOTOR > 2)
       TCCR2A |= _BV(COM2A1); // connect pin 11 to timer 2 channel A
+    #endif
     #endif
     #if (NUMBER_MOTOR > 3)
       TCCR2A |= _BV(COM2B1); // connect pin 3 to timer 2 channel B

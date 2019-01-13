@@ -368,7 +368,7 @@ At this moment you can use this function only with WinGUI 2.3 release. MultiWiiC
       //TODO
       //#define SERIAL_SUM_PPM         ROLL,PITCH,THROTTLE,YAW,AUX1,AUX2,AUX3,AUX4,8,9,10,11 //For Robe/Hitec/Futaba
       //#define SERIAL_SUM_PPM         ROLL,PITCH,YAW,THROTTLE,AUX1,AUX2,AUX3,AUX4,8,9,10,11 //For Multiplex
-      #define SERIAL_SUM_PPM         PITCH,ROLL,THROTTLE,YAW,AUX1,AUX2,AUX3,AUX4,8,9,10,11 //For some Hitec/Sanwa/Others
+      //#define SERIAL_SUM_PPM         PITCH,ROLL,THROTTLE,YAW,AUX1,AUX2,AUX3,AUX4,8,9,10,11 //For some Hitec/Sanwa/ATmega128/Others
       //#define SERIAL_SUM_PPM         THROTTLE,YAW,ROLL,PITCH,AUX1,AUX2,AUX3,AUX4,8,9,10,11 //Modelcraft
 
       // Uncommenting following line allow to connect PPM_SUM receiver to standard THROTTLE PIN on MEGA boards (eg. A8 in CRIUS AIO)
@@ -407,6 +407,9 @@ At this moment you can use this function only with WinGUI 2.3 release. MultiWiiC
     /* Graupner Hott HD */
     //#define SUMD PITCH,YAW,THROTTLE,ROLL,AUX1,AUX2,AUX3,AUX4
     //#define RX_SERIAL_PORT 1
+
+    /******************************* nRF24L01 ****************************************/
+    #define NRF24_RX
 
 /*************************************************************************************************/
 /*****************                                                                 ***************/
@@ -886,7 +889,7 @@ Also note, that maqgnetic declination changes with time, so recheck your value e
   /****                             TELEMETRY                      ****/
   /********************************************************************/
     // select one of the two protocols depending on your receiver
-    //#define FRSKY_TELEMETRY           // used for FRSKY twoway receivers with telemetry (D-series like D8R-II or D8R-XP) 
+    #define FRSKY_TELEMETRY           // used for FRSKY twoway receivers with telemetry (D-series like D8R-II or D8R-XP)
                                       // VBAT, Baro, MAG, GPS and POWERMETER are helpful
                                       // VBAT_CELLS is optional for a forth screen on the display FLD-02
     //#define SPORT_TELEMETRY           // for FRSKY twoway receivers with S.PORT telemetry (S-series like X4R/X6R/X8R), not implemented yet - TO BE DONE
@@ -895,8 +898,8 @@ Also note, that maqgnetic declination changes with time, so recheck your value e
     #define TELEMETRY_SERIAL 3        // change if required
 
     // FRSKY standard telemetry specific devices
-    #define FRSKY_FLD02               // send only data specific for the FRSKY display FLD-02
-    //#define OPENTX                    // send OpenTX specific data
+    //#define FRSKY_FLD02               // send only data specific for the FRSKY display FLD-02
+    #define OPENTX                    // send OpenTX specific data
 
     // FRSKY standard telemetry specific selections
     //#define COORDFORMAT_DECIMALMINUTES // uncomment to get the format DD°MM.mmmm for the coordinates - comment out to get the format DD.dddddd° for the coordinates 

@@ -26,6 +26,7 @@ March  2015     V2.4
 #include "GPS.h"
 #include "Protocol.h"
 #include "Telemetry.h"
+#include "NRF24_RX.h"
 
 #include <avr/pgmspace.h>
 
@@ -710,6 +711,9 @@ void setup() {
   #if defined(OPENLRSv2MULTI)
     initOpenLRS();
   #endif
+  #if defined(NRF24_RX)
+    NRF24_Init();
+  #endif
   initSensors();
   #if GPS
     GPS_set_pids();
@@ -875,6 +879,9 @@ void loop () {
   #if defined(OPENLRSv2MULTI) 
     Read_OpenLRS_RC();
   #endif 
+  #if defined(NRF24_RX)
+	NRF24_Read_RC();
+  #endif
 
   #if defined(SERIAL_RX)
   if ((spekFrameDone == 0x01) || ((int16_t)(currentTime-rcTime) >0 )) { 
