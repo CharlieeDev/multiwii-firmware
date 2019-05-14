@@ -1,0 +1,7 @@
+{
+    "board": "MegaCore-master:avr:128",
+    "configuration": "bootloader=no_bootloader,BOD=2v7,LTO=Os,clock=16MHz_external",
+    "programmer": "USBasp",
+    "sketch": "MultiWii.ino",
+    "output": "../build"
+}
